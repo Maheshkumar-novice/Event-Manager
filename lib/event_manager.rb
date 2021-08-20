@@ -3,6 +3,7 @@
 
 require 'csv'
 require 'google/apis/civicinfo_v2'
+require 'erb'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
@@ -16,12 +17,19 @@ def legislators_by_zipcode(zipcode)
                                                             levels: 'country',
                                                             roles: %w[
                                                               legislatorUpperBody legislatorLowerBody
-                                                            ])
-    legislators = legislators.officials
-    legislator_names = legislators.map(&:name)
-    legislator_names.join(', ')
+                                                            ]).officials
   rescue StandardError
     'You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials'
+  end
+end
+
+def save_thank_you_letter(id, form_letter)
+  Dir.mkdir('output') unless Dir.exist?('output')
+
+  filename = "output/thanks_#{id}.html"
+
+  File.open(filename, 'w') do |file|
+    file.puts form_letter
   end
 end
 
@@ -33,14 +41,17 @@ contents = CSV.open(
   header_converters: :symbol
 )
 
-template_letter = File.read('form_letter.html')
+template_letter = File.read('form_letter.erb')
+erb_template = ERB.new template_letter
 
 contents.each do |row|
+  id = row[0]
+  puts "Creating thanks_#{id}.html..."
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
-  personal_letter = template_letter.gsub('FIRST_NAME', name)
-  personal_letter.gsub!('LEGISLATORS', legislators)
 
-  puts personal_letter
+  form_letter = erb_template.result(binding)
+
+  save_thank_you_letter(id, form_letter)
 end
