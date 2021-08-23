@@ -10,11 +10,11 @@ def clean_zipcode(zipcode)
 end
 
 def clean_phone_number(phone)
-  phone = phone.delete('^0-9')
-  if phone.length == 11 && phone[0] == '1' || phone.length == 10
+  phone = phone.delete('^0-9').match(/^(1\d{10}|\d{10})$/).to_s
+  if phone != ''
     phone = phone[-10..-1]
     [phone[0..2], phone[3..5], phone[6..-1]].join('-')
-  elsif phone.length != 10
+  else
     'Valid Number Not Provided!'
   end
 end
@@ -60,9 +60,9 @@ contents.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   phone = clean_phone_number(row[:homephone])
-  puts phone + '=>' + row[:homephone]
+  
   legislators = legislators_by_zipcode(zipcode)
-  # form_letter = erb_template.result(binding)
+  form_letter = erb_template.result(binding)
 
-  # save_thank_you_letter(id, form_letter)
+  save_thank_you_letter(id, form_letter)
 end
