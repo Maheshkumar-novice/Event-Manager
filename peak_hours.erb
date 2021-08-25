@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peak Hours</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      table * {
+        border: 2px solid black;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <% if peak_hours.kind_of? (Hash) %>
+        <th>Peak Hours</th>
+        <% peak_hours.keys.each do |hour| %>
+        <tr>
+          <td><%= "#{hour} - #{hour + 1}" %>
+        </tr>
+        <% end %>
+      <% else %>
+          <th></th>
+          <td>No Data Found</td>
+      <% end %>
+    </table>
+  </body>
+</html>

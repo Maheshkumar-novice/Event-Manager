@@ -16,8 +16,8 @@
     </style>
   </head>
   <body>
-    <h1>Thanks <%= name %>!</h1>
-    <p>Phone: <%= phone %></p>
+    <h1>Thanks Chris!</h1>
+    <p>Phone: 613-565-4000</p>
     <p>
       Thanks for coming to our conference. We couldn't have done it without you!
     </p>
@@ -27,18 +27,10 @@
       representative:
     </p>
     <table>
-      <% if legislators.kind_of? (Array) %>
-        <th>Name</th><th>Website</th>
-        <% legislators.each do |legislator| %>
-        <tr>
-          <td><%= "#{legislator.name}" %></td>
-          <td><%= "#{legislator.urls.join}" unless legislator.urls.nil? %></td>
-        </tr>
-        <% end %>
-      <% else %>
+      
         <th></th>
-        <td><%= "#{legislators}" %></td>
-      <% end %>
+        <td>You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials</td>
+      
     </table>
   </body>
 </html>
