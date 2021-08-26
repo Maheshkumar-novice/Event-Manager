@@ -17,9 +17,9 @@
   </head>
   <body>
     <table>
-      <% if peak_hours.kind_of? (Hash) %>
+      <% if peak.kind_of? (Hash) %>
         <th>Peak Hours</th>
-        <% peak_hours.keys.each do |hour| %>
+        <% peak.keys.each do |hour| %>
         <tr>
           <td><%= "#{hour} - #{hour + 1}" %>
         </tr>

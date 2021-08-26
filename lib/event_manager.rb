@@ -35,23 +35,39 @@ def legislators_by_zipcode(zipcode)
   end
 end
 
-def save_thank_you_letter(id, form_letter)
-  Dir.mkdir('output') unless Dir.exist?('output')
-  Dir.mkdir('output/thanks') unless Dir.exist?('output/thanks')
+def create_dir(name)
+  Dir.mkdir(name) unless Dir.exist?(name)
+end
 
-  filename = "output/thanks/thanks_#{id}.html"
-
+def write_to_file(filename, content)
   File.open(filename, 'w') do |file|
-    file.puts form_letter
+    file.puts content
   end
 end
 
-peak_hash = Hash.new(0)
+def create_erb_template(template_name)
+  # binding.pry
+  template = File.read(template_name)
+  ERB.new template
+end
+
+def max_from_hash(hash)
+  hash.select { |_k, v| v == hash.values.max }
+end
+
+def save_html(sub_dir, filename, content)
+  create_dir('output')
+  create_dir("output/#{sub_dir}")
+  filename = "output/#{sub_dir}/#{filename}"
+  write_to_file(filename, content)
+end
+
+peak_hours_hash = Hash.new(0)
 def update_peak_time_hash(date_time, peak_hash)
   peak_hash[Time.strptime(date_time, '%m/%d/%y %k:%M').hour] += 1
 end
 
-peak_day_hash = Hash.new(0)
+peak_days_hash = Hash.new(0)
 def update_peak_days_hash(date_time, peak_day_hash)
   peak_day_hash[Date.strptime(date_time, '%m/%d/%y %k:%M').strftime('%A')] += 1
 end
@@ -62,8 +78,7 @@ contents = CSV.open(
   header_converters: :symbol
 )
 
-template_letter = File.read('form_letter.erb')
-erb_template = ERB.new template_letter
+erb_template = create_erb_template('form_letter.erb')
 
 contents.each do |row|
   id = row[0]
@@ -71,31 +86,21 @@ contents.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   phone = clean_phone_number(row[:homephone])
-  update_peak_time_hash(row[:regdate], peak_hash)
-  update_peak_days_hash(row[:regdate], peak_day_hash)
+
+  update_peak_time_hash(row[:regdate], peak_hours_hash)
+  update_peak_days_hash(row[:regdate], peak_days_hash)
+
   legislators = legislators_by_zipcode(zipcode)
-  form_letter = erb_template.result(binding)
+  content = erb_template.result(binding)
 
-  save_thank_you_letter(id, form_letter)
+  save_html('thanks', "Thanks_#{id}.html", content)
 end
 
-peak_hours = peak_hash.select { |_k, v| v == peak_hash.values.max }
-hour_erb = File.read('peak_hours.erb')
-hour_template = ERB.new hour_erb
-hour_html = hour_template.result(binding)
-Dir.mkdir('output') unless Dir.exist?('output')
-Dir.mkdir('output/hours') unless Dir.exist?('output/hours')
-File.open('output/hours/peak_hours.html', 'w') do |file|
-  file.puts hour_html
+def save_peak(erb, filename, hash)
+  peak = max_from_hash(hash)
+  html = create_erb_template(erb).result(binding)
+  save_html('peak', filename, html)
 end
 
-peak_days = peak_day_hash.select { |_k, v| v == peak_day_hash.values.max }
-puts peak_days
-day_erb = File.read('peak_days.erb')
-day_template = ERB.new day_erb
-day_html = day_template.result(binding)
-Dir.mkdir('output') unless Dir.exist?('output')
-Dir.mkdir('output/days') unless Dir.exist?('output/days')
-File.open('output/days/peak_days.html', 'w') do |file|
-  file.puts day_html
-end
+save_peak('peak_hours.erb', 'peak_hours.html', peak_hours_hash)
+save_peak('peak_days.erb', 'peak_days.html', peak_days_hash)
