@@ -26,7 +26,7 @@
 <Description> 
 
 ## Demo
-<!-- ![Example](./assets/example.gif) -->
+![Demo](./demo/demo.gif)
 </br>
   
 ## Built With
