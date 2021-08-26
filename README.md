@@ -1,6 +1,7 @@
 
-# [Title](#)
-<about>
+# [Event-Manager](https://www.theodinproject.com/paths/full-stack-ruby-on-rails/courses/ruby-programming/lessons/event-manager-ruby-programming)
+This project is part of the [The Odin Project](https://www.theodinproject.com/paths/full-stack-ruby-on-rails/courses/ruby-programming/lessons/event-manager-ruby-programming)'s Ruby curriculum.
+
 <details open="open">
   <summary>Table Of Contents</summary>
   <ol>
@@ -23,19 +24,27 @@
 </details>
 
 ## Description
-<Description> 
+Event Manager Project - Code along & Assignments
 
 ## Demo
-<!-- ![Example](./assets/example.gif) -->
+![Demo](./demo/demo.gif)
 </br>
   
 ## Built With
-* <Thing>
+* Ruby
 
 ## What I Learned
-* <What>
+* How to work with CSV files and File operations with Ruby
+* How to create ERB template
+* How to use ERB template with Ruby
+* How to use Google Civic API with Ruby
+* How to organise methods
+* How to use Date and Time with Ruby
+* How to format Date and Time with Ruby
+* How to use begin and rescue in Ruby
+* How to create Directories with Ruby
   
 ## Acknowledgements
-* <Ack>
+* [The Odin Project](https://theodinproject.com)
 
-[Move To Top](#title)
+[Move To Top](#event-manager)
