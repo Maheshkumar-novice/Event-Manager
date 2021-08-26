@@ -35,7 +35,7 @@ Event Manager Project - Code along & Assignments
 
 ## What I Learned
 * How to work with CSV files and File operations with Ruby
-* How to create ERB template
+* How to create ERB template with Ruby
 * How to use ERB template with Ruby
 * How to use Google Civic API with Ruby
 * How to organise methods
