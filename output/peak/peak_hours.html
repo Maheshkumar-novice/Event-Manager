@@ -17,19 +17,21 @@
   </head>
   <body>
     <table>
-      <% if peak.kind_of? (Hash) %>
+      
         <th>Peak Hours</th>
         <th>Number Of People</th>
-        <% peak.each do |hour, number_of_people| %>
+        
         <tr>
-          <td><%= "#{hour} - #{hour + 1}" %></td>
-          <td><%= "#{number_of_people}" %>
+          <td>13 - 14</td>
+          <td>3
         </tr>
-        <% end %>
-      <% else %>
-          <th></th>
-          <td>No Data Found</td>
-      <% end %>
+        
+        <tr>
+          <td>16 - 17</td>
+          <td>3
+        </tr>
+        
+      
     </table>
   </body>
 </html>

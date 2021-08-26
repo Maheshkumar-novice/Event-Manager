@@ -19,9 +19,11 @@
     <table>
       <% if peak.kind_of? (Hash) %>
         <th>Peak Days</th>
-        <% peak.keys.each do |day| %>
+        <th>Number Of People</th>
+        <% peak.each do |day, number_of_people| %>
         <tr>
-          <td><%= "#{day}" %>
+          <td><%= "#{day}" %></td>
+          <td><%= "#{number_of_people}" %></td>
         </tr>
         <% end %>
       <% else %>

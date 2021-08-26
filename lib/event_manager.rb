@@ -4,7 +4,6 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
-require 'pry'
 require 'date'
 
 def clean_zipcode(zipcode)
@@ -25,14 +24,22 @@ def legislators_by_zipcode(zipcode)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
   begin
-    civic_info.representative_info_by_address(
-      address: zipcode,
-      levels: 'country',
-      roles: %w[legislatorUpperBody legislatorLowerBody]
-    ).officials
+    civic_info.representative_info_by_address(address: zipcode,
+                                              levels: 'country',
+                                              roles: %w[legislatorUpperBody
+                                                        legislatorLowerBody]).officials
   rescue StandardError
     'You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials'
   end
+end
+
+def print_filename(filename)
+  puts "\e[33mCreating #{filename}\e[0m"
+end
+
+def create_erb_template(template_name)
+  template = File.read(template_name)
+  ERB.new template
 end
 
 def create_dir(name)
@@ -45,16 +52,6 @@ def write_to_file(filename, content)
   end
 end
 
-def create_erb_template(template_name)
-  # binding.pry
-  template = File.read(template_name)
-  ERB.new template
-end
-
-def max_from_hash(hash)
-  hash.select { |_k, v| v == hash.values.max }
-end
-
 def save_html(sub_dir, filename, content)
   create_dir('output')
   create_dir("output/#{sub_dir}")
@@ -62,44 +59,49 @@ def save_html(sub_dir, filename, content)
   write_to_file(filename, content)
 end
 
-peak_hours_hash = Hash.new(0)
-def update_peak_time_hash(date_time, peak_hash)
+def max_from_hash(hash)
+  hash.select { |_k, v| v == hash.values.max }
+end
+
+def update_peak_hours_hash(date_time, peak_hash)
   peak_hash[Time.strptime(date_time, '%m/%d/%y %k:%M').hour] += 1
 end
 
-peak_days_hash = Hash.new(0)
 def update_peak_days_hash(date_time, peak_day_hash)
   peak_day_hash[Date.strptime(date_time, '%m/%d/%y %k:%M').strftime('%A')] += 1
 end
+
+def save_peak(erb, filename, hash)
+  print_filename(filename)
+  peak = max_from_hash(hash)
+  html = create_erb_template(erb).result(binding)
+  save_html('peak', filename, html)
+end
+
+peak_hours_hash = Hash.new(0)
+peak_days_hash = Hash.new(0)
 
 contents = CSV.open(
   'event_attendees.csv',
   headers: true,
   header_converters: :symbol
 )
-
-erb_template = create_erb_template('form_letter.erb')
+thanks_template = create_erb_template('form_letter.erb')
 
 contents.each do |row|
   id = row[0]
-  puts "Creating thanks_#{id}.html..."
+  print_filename("thanks_#{id}.html")
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   phone = clean_phone_number(row[:homephone])
 
-  update_peak_time_hash(row[:regdate], peak_hours_hash)
+  update_peak_hours_hash(row[:regdate], peak_hours_hash)
   update_peak_days_hash(row[:regdate], peak_days_hash)
 
   legislators = legislators_by_zipcode(zipcode)
-  content = erb_template.result(binding)
+  content = thanks_template.result(binding)
 
-  save_html('thanks', "Thanks_#{id}.html", content)
-end
-
-def save_peak(erb, filename, hash)
-  peak = max_from_hash(hash)
-  html = create_erb_template(erb).result(binding)
-  save_html('peak', filename, html)
+  save_html('thanks', "thanks_#{id}.html", content)
 end
 
 save_peak('peak_hours.erb', 'peak_hours.html', peak_hours_hash)
