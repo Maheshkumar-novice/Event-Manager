@@ -68,7 +68,8 @@ def update_peak_hours_hash(date_time, peak_hash)
 end
 
 def update_peak_days_hash(date_time, peak_day_hash)
-  peak_day_hash[Date.strptime(date_time, '%m/%d/%y %k:%M').strftime('%A')] += 1
+  # peak_day_hash[Date.strptime(date_time, '%m/%d/%y %k:%M').strftime('%A')] += 1
+  peak_day_hash[Date::DAYNAMES[Date.strptime(date_time, '%m/%d/%y %k:%M').wday]] += 1
 end
 
 def save_peak(erb, filename, hash)
